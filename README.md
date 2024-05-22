@@ -1,5 +1,5 @@
 # hangman-game
-
+ 
 HangOut & Hangman is a multiplayer Hangman game built with Java Spring Boot, offering real-time communication using WebSockets. The application allows users to create accounts, join game rooms, and play the classic game of Hangman with a twist: it's multiplayer! This document outlines key design choices, technologies used, and provides comprehensive instructions on setting up and testing the game.
 
 -Key Design Choices
