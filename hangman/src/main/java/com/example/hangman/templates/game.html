@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Game</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/sockjs-client/1.5.0/sockjs.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/stomp.js/2.3.3/stomp.min.js"></script>
+</head>
+<body>
+    <h1>Hangman Game</h1>
+    <div id="gameState">
+        <!-- Game state will be updated here -->
+    </div>
+    <form id="guessForm">
+        <input type="text" id="guess" maxlength="1"/>
+        <button type="submit">Guess</button>
+    </form>
+
+    <script>
+        var stompClient = null;
+
+        function connect() {
+            var socket = new SockJS('/ws');
+            stompClient = Stomp.over(socket);
+            stompClient.connect({}, function (frame) {
+                stompClient.subscribe('/topic/updates', function (gameState) {
+                    showGameState(JSON.parse(gameState.body));
+                });
+            });
+        }
+
+        function showGameState(gameState) {
+            document.getElementById('gameState').innerHTML =
+                'Word: ' + gameState.maskedWord + '<br>' +
+                'Incorrect guesses: ' + gameState.incorrectGuesses + '/' + gameState.maxIncorrectGuesses;
+        }
+
+        document.getElementById('guessForm').addEventListener('submit', function (e) {
+            e.preventDefault();
+            var guess = document.getElementById('guess').value;
+            stompClient.send("/app/game/guess", {}, JSON.stringify({'roomId': roomId, 'character': guess}));
+        });
+
+        connect();
+    </script>
+</body>
+</html>
